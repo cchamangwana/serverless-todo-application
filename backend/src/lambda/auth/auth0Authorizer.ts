@@ -74,12 +74,14 @@ async function verifyToken(authHeader: string): Promise<JwtPayload> {
     )
     .map((key) => {
       return { kid: key.kid, nbf: key.nbf, publicKey: formatCert(key.x5c[0]) }
-    });
+    })
 
   // Finding the right key to use according to kid in token header.
-  const signingKey = signingKeys.find(k => k.kid === jwt.header.kid);
+  const signingKey = signingKeys.find((k) => k.kid === jwt.header.kid)
 
-  return verify(token, signingKey.publicKey, { algorithms: ['RS256'] }) as JwtPayload
+  return verify(token, signingKey.publicKey, {
+    algorithms: ['RS256']
+  }) as JwtPayload
 }
 
 function getToken(authHeader: string): string {
@@ -95,7 +97,7 @@ function getToken(authHeader: string): string {
 }
 
 export function formatCert(cert: string) {
-  cert = cert.match(/.{1,64}/g).join('\n');
-  cert = `-----BEGIN CERTIFICATE-----\n${cert}\n-----END CERTIFICATE-----\n`;
-  return cert;
+  cert = cert.match(/.{1,64}/g).join('\n')
+  cert = `-----BEGIN CERTIFICATE-----\n${cert}\n-----END CERTIFICATE-----\n`
+  return cert
 }
