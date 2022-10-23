@@ -64,7 +64,7 @@ functions:
           cors: true
           authorizer: Auth
           # Add the following line to enable request validation
-          #reqValidatorName: 'myGetTodosValidator'
+          reqValidator: RequestBodyValidator
     iamRoleStatements:
       - Effect: Allow
         Action:
