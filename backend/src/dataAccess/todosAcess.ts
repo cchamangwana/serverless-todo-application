@@ -75,35 +75,69 @@ export class TodosAccess {
     return result.Items[0] as TodoItem
   }
 
+  // async updateTodo(
+  //   todoId: string,
+  //   userId: string,
+  //   body: TodoUpdate
+  // ): Promise<void> {
+  //   logger.info('Updating one todo', {
+  //     todoId,
+  //     body
+  //   })
+
+  //   await this.docClient
+  //     .update({
+  //       TableName: this.todoItemsTable,
+  //       Key: {
+  //         userId,
+  //         todoId
+  //       },
+  //       UpdateExpression: `set
+  //         name = :n,
+  //         dueDate = :m,
+  //         done = :d,
+  //       `,
+  //       ExpressionAttributeValues: {
+  //         ':n': body.name,
+  //         ':m': body.dueDate,
+  //         ':d': body.done
+  //       }
+  //     })
+  //     .promise()
+  // }
+
   async updateTodo(
     todoId: string,
     userId: string,
-    body: TodoUpdate
-  ): Promise<void> {
-    logger.info('Updating one todo', {
-      todoId,
-      body
-    })
+    todoUpdate: TodoUpdate
+  ): Promise<TodoUpdate> {
+    console.log('Updating todo')
 
-    await this.docClient
-      .update({
-        TableName: this.todoItemsTable,
-        Key: {
-          userId,
-          todoId
-        },
-        UpdateExpression: `set 
-          name = :n,
-          dueDate = :m,
-          done = :d,
-        `,
-        ExpressionAttributeValues: {
-          ':n': body.name,
-          ':m': body.dueDate,
-          ':d': body.done
-        }
-      })
-      .promise()
+    const params = {
+      TableName: this.todoItemsTable,
+      Key: {
+        userId: userId,
+        todoId: todoId
+      },
+      UpdateExpression: 'set #a = :a, #b = :b, #c = :c',
+      ExpressionAttributeNames: {
+        '#a': 'name',
+        '#b': 'dueDate',
+        '#c': 'done'
+      },
+      ExpressionAttributeValues: {
+        ':a': todoUpdate['name'],
+        ':b': todoUpdate['dueDate'],
+        ':c': todoUpdate['done']
+      },
+      ReturnValues: 'ALL_NEW'
+    }
+
+    const result = await this.docClient.update(params).promise()
+    console.log(result)
+    const attributes = result.Attributes
+
+    return attributes as TodoUpdate
   }
 
   async deleteTodo(todoId: string, userId: string): Promise<void> {

@@ -18,7 +18,7 @@ provider:
   #lambdaHashingVersion: '20201221'
 
   stage: ${opt:stage, 'dev'}
-  region: ${opt:region, 'us-east-2'}
+  region: ${opt:region, 'us-east-1'}
 
   tracing:
     lambda: true
